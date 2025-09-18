@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mapper.StockTblMapper">
+
+    <!-- 基础结果集映射（补充 freeze_count） -->
+    <resultMap id="BaseResultMap" type="com.example.entity.StockTbl">
+        <id column="id" property="id"/>
+        <result column="commodity_code" property="commodityCode"/>
+        <result column="count" property="count"/>
+        <result column="freeze_count" property="freezeCount"/>
+    </resultMap>
+
+    <!-- TCC Try阶段：冻结库存 -->
+    <update id="freezeStock">
+        UPDATE stock_tbl
+        SET count = count - #{reduceCount},  -- 可用库存减少
+            freeze_count = freeze_count + #{reduceCount}  -- 冻结库存增加
+        WHERE commodity_code = #{commodityCode}
+          AND count >= #{reduceCount}  -- 确保可用库存充足
+    </update>
+
+    <!-- TCC Confirm阶段：确认扣减（冻结库存转实际扣减） -->
+    <update id="confirmReduceStock">
+        UPDATE stock_tbl
+        SET freeze_count = freeze_count - #{reduceCount}  -- 冻结库存减少（实际扣减）
+        WHERE commodity_code = #{commodityCode}
+          AND freeze_count >= #{reduceCount}  -- 确保冻结库存充足
+    </update>
+
+    <!-- TCC Cancel阶段：取消冻结（释放冻结库存） -->
+    <update id="cancelFreezeStock">
+        UPDATE stock_tbl
+        SET count        = count + #{reduceCount},       -- 可用库存恢复
+            freeze_count = freeze_count - #{count} -- 冻结库存减少
+        WHERE commodity_code = #{commodityCode}
+    </update>
+
+    <!-- 带行锁的查询（防止并发问题） -->
+    <select id="selectByCommodityCodeWithLock" resultMap="BaseResultMap">
+        SELECT id, commodity_code, count, freeze_count
+        FROM stock_tbl
+        WHERE commodity_code = #{commodityCode}
+            FOR UPDATE  -- 行级锁，TCC阶段防止并发修改
+    </select>
+
+</mapper>

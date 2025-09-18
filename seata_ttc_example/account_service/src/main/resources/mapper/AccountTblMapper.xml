@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 必须与 Mapper 接口全类名一致 -->
+<mapper namespace="com.example.mapper.AccountTblMapper">
+
+    <!-- 基础结果集映射：数据库字段与实体类属性对应 -->
+    <resultMap id="BaseResultMap" type="com.example.entity.AccountTbl">
+        <result column="user_id" property="userId"/>
+        <result column="balance" property="balance"/>
+        <result column="freeze_amount" property="freezeAmount"/>
+    </resultMap>
+
+    <!-- 基础查询字段，可复用 -->
+    <sql id="Base_Column_List">
+       user_id, balance
+    </sql>
+
+    <!-- 根据 ID 查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account_tbl
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户 ID 查询 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account_tbl
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 查询所有账户 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM account_tbl
+    </select>
+
+    <!-- 新增账户 -->
+    <insert id="insert" parameterType="com.example.entity.AccountTbl">
+        INSERT INTO account_tbl (user_id, balance)
+        VALUES (#{userId}, #{balance})
+    </insert>
+
+    <!-- 全字段更新（动态 SQL，只更新非空字段） -->
+    <update id="update" parameterType="com.example.entity.AccountTbl">
+        UPDATE account_tbl
+        <set>
+            <if test="balance != null">balance = #{balance},</if>
+        </set>
+        WHERE userId = #{userId}
+    </update>
+
+    <!-- 根据 ID 删除 -->
+    <delete id="deleteById">
+        DELETE FROM account_tbl
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 扣减余额（balance = balance - amount） -->
+    <update id="deductBalance">
+        UPDATE account_tbl
+        SET balance = balance - #{amount}
+        WHERE user_id = #{userId}
+        AND balance >= #{amount}  <!-- 确保余额充足 -->
+    </update>
+
+    <!-- 增加余额（balance = balance + amount） -->
+    <update id="addBalance">
+        UPDATE account_tbl
+        SET balance = balance + #{amount}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 冻结金额（balance 减少，freeze_amount 增加） -->
+    <update id="freezeAmount">
+        UPDATE account_tbl
+        SET balance = balance - #{amount},
+        freeze_amount = freeze_amount + #{amount}
+        WHERE user_id = #{userId}
+        AND balance >= #{amount}  <!-- 确保余额充足 -->
+    </update>
+
+    <!-- 解冻金额（balance 增加，freeze_amount 减少） -->
+    <update id="unfreezeAmount">
+        UPDATE account_tbl
+        SET balance = balance + #{amount}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 扣减冻结金额（freeze_amount 减少，实际扣减） -->
+    <update id="deductFreezeAmount">
+        UPDATE account_tbl
+        SET freeze_amount = freeze_amount - #{amount}
+        WHERE user_id = #{userId}
+        AND freeze_amount >= #{amount}  <!-- 确保冻结金额充足 -->
+    </update>
+
+</mapper>

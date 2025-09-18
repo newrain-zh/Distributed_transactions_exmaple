@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.newrain</groupId>
+        <artifactId>Distributed_transactions_exmaple</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>seata_ttc_example</artifactId>
+    <packaging>pom</packaging>
+    <name>Archetype - ttc_example</name>
+    <url>http://maven.apache.org</url>
+    <modules>
+        <module>order_service</module>
+        <module>business_service</module>
+        <module>account_service</module>
+        <module>storage_service</module>
+    </modules>
+</project>

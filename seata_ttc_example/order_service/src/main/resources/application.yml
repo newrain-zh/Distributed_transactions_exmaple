@@ -1,0 +1,59 @@
+# seata 配置
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: default_tx_group
+  service:
+    vgroup-mapping:
+      default_tx_group: default
+    grouplist:
+      default: 127.0.0.1:8091
+#  config:
+#    type: nacos
+#    nacos:
+#      server-addr: localhost:8848
+#      data-id: seata-Server
+#      username: nacos
+#      password: nacos
+#      group: DEFAULT_GROUP
+#      namespace: public
+  registry:
+    type: nacos
+    nacos:
+      cluster: default
+      group: DEFAULT_GROUP
+      application: seata-server
+      server-addr: localhost:8848
+      namespace: public
+      username: nacos
+      password: nacos
+spring:
+  application:
+    name: order-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/ttc_test?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  cloud:
+    nacos:
+      discovery:
+        username: nacos
+        password: nacos
+        server-addr: localhost:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        secure: true
+        register-enabled: true
+server:
+  port: 8084
+# MyBatis 配置
+mybatis:
+  # 映射文件路径（XML文件位置）
+  mapper-locations: classpath:mybatis/mappers/*.xml
+  # 实体类别名包（简化XML中的类名书写）
+  type-aliases-package: com.example.demo.entity
+  # 日志配置（可选，打印SQL便于调试）
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true  #
