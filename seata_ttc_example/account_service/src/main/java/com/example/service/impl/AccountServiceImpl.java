@@ -67,7 +67,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean confirm(BusinessActionContext context) {
         String xid = context.getXid();
         log.info("账户服务...confirm进入 xid={}", xid);
@@ -85,7 +85,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean cancel(BusinessActionContext actionContext) {
         String xid = actionContext.getXid();
         log.info("账户服务...cancel进入 xid={}", xid);

@@ -42,12 +42,10 @@ public class BusinessServiceImpl implements BusinessService {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    @GlobalTransactional(timeoutMills = 300000, name = "springboot-feign-seata-tcc")
+    @GlobalTransactional(timeoutMills = 300000, name = "seata-tcc")
+    // 开启全局事务
     public void purchase(String userId, String commodityCode, int orderCount, boolean forceRollback) {
         log.info("订购商品库存: " + RootContext.getXID());
-        Map<String, Object> entries = RootContext.entries();
-        entries.put("commodityCode", commodityCode);
-        entries.put("orderCount", orderCount);
         stockFeignClient.reduce(commodityCode, orderCount); // 扣减商品库存
         orderFeignClient.create(userId, commodityCode, orderCount); // 创建订单
         if (forceRollback) {
