@@ -18,10 +18,10 @@ package com.example.service.impl;
 
 import com.example.feign.OrderFeignClient;
 import com.example.feign.StockFeignClient;
+import com.example.service.BusinessService;
 import io.seata.core.context.RootContext;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.seata.service.BusinessService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -53,23 +53,6 @@ public class BusinessServiceImpl implements BusinessService {
         if (forceRollback) {
             throw new RuntimeException("force rollback!");
         }
-    }
-
-    @Override
-    @GlobalTransactional(timeoutMills = 300000, name = "springboot-feign-seata-xa-commit")
-    public void purchaseCommit(String userId, String commodityCode, int orderCount) {
-        log.info("purchaseCommit begin ... xid: " + RootContext.getXID());
-        stockFeignClient.reduce(commodityCode, orderCount);
-        orderFeignClient.create(userId, commodityCode, orderCount);
-    }
-
-    @Override
-    @GlobalTransactional(timeoutMills = 300000, name = "springboot-feign-seata-xa-rollback")
-    public void purchaseRollback(String userId, String commodityCode, int orderCount) {
-        log.info("purchaseRollback begin ... xid: " + RootContext.getXID());
-        stockFeignClient.reduce(commodityCode, orderCount);
-        orderFeignClient.create(userId, commodityCode, orderCount);
-        throw new RuntimeException("force rollback!");
     }
 
 

@@ -18,7 +18,7 @@ package com.example.controller;
 
 import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
 import com.example.TestData;
-import org.apache.seata.service.BusinessService;
+import com.example.service.BusinessService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

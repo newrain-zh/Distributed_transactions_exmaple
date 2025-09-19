@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.seata.service;
+package com.example.service;
 
 /**
  * The interface Business service.
@@ -31,21 +31,4 @@ public interface BusinessService {
      */
     void purchase(String userId, String commodityCode, int orderCount, boolean forceRollback);
 
-    /**
-     * 用户订购商品 提交
-     *
-     * @param userId        用户ID
-     * @param commodityCode 商品编号
-     * @param orderCount    订购数量
-     */
-    void purchaseCommit(String userId, String commodityCode, int orderCount);
-
-    /**
-     * 用户订购商品 提交
-     *
-     * @param userId        用户ID
-     * @param commodityCode 商品编号
-     * @param orderCount    订购数量
-     */
-    void purchaseRollback(String userId, String commodityCode, int orderCount);
 }
